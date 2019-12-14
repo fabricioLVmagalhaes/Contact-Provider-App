@@ -1,12 +1,16 @@
 package com.magalhaes.contextprovideractivity
 
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 
 import kotlinx.android.synthetic.main.activity_main.*
+
+private const val TAG = "MainActivityLog"
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,8 +20,15 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            Log.d(TAG, "fab onClick: starts")
+            val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+
+            var cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+                projection,
+                null,
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+            Log.d(TAG, "fab onClick: ends")
         }
     }
 
