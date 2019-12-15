@@ -1,39 +1,47 @@
 package com.magalhaes.contextprovideractivity
 
+import android.Manifest.permission.READ_CONTACTS
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.Log
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
-
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
 private const val TAG = "MainActivityLog"
+private const val REQUEST_CODE_READ_CONTACTS = 1
 
 class MainActivity : AppCompatActivity() {
+
+    private var readGranted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        val hasReadContactPermission = ContextCompat.checkSelfPermission(this, READ_CONTACTS)
+        Log.d(TAG, "onCreate: checkSelfPermission returned")
+
         fab.setOnClickListener { view ->
             Log.d(TAG, "fab onClick: starts")
             val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
 
-            var cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+            var cursor = contentResolver.query(
+                ContactsContract.Contacts.CONTENT_URI,
                 projection,
                 null,
                 null,
-                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
+            )
 
             val contacts = ArrayList<String>()
             cursor?.use {
-                while(it.moveToNext()){
+                while (it.moveToNext()) {
                     contacts.add(it.getString(it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)))
                 }
             }
