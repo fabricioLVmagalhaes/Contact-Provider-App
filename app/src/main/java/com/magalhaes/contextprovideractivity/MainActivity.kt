@@ -7,8 +7,10 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 private const val TAG = "MainActivityLog"
 
@@ -28,6 +30,17 @@ class MainActivity : AppCompatActivity() {
                 null,
                 null,
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+
+            val contacts = ArrayList<String>()
+            cursor?.use {
+                while(it.moveToNext()){
+                    contacts.add(it.getString(it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)))
+                }
+            }
+
+            val adapter = ArrayAdapter<String>(this, R.layout.contact_detail, R.id.name, contacts)
+            contact_names.adapter = adapter
+
             Log.d(TAG, "fab onClick: ends")
         }
     }
