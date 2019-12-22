@@ -23,7 +23,7 @@ private const val REQUEST_CODE_READ_CONTACTS = 1
 
 class MainActivity : AppCompatActivity() {
 
-    private var readGranted = false
+//    private var readGranted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         if (hasReadContactPermission == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "onCreate: permission granted")
-            readGranted = true //TODO: don't do this
+//            readGranted = true //TODO: don't do this
         } else {
             Log.d(TAG, "onCreate: requesting permission")
             ActivityCompat.requestPermissions(
@@ -48,10 +48,10 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             Log.d(TAG, "fab onClick: starts")
 
-            if (readGranted) {
+            if (ContextCompat.checkSelfPermission(this, READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                 val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
 
-                var cursor = contentResolver.query(
+                val cursor = contentResolver.query(
                     ContactsContract.Contacts.CONTENT_URI,
                     projection,
                     null,
@@ -70,10 +70,18 @@ class MainActivity : AppCompatActivity() {
                     ArrayAdapter<String>(this, R.layout.contact_detail, R.id.name, contacts)
                 contact_names.adapter = adapter
             } else {
-                Snackbar.make(view, "Please grant access to your Contacts", Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(
+                    view,
+                    "Please grant access to your Contacts",
+                    Snackbar.LENGTH_INDEFINITE
+                )
                     .setAction("Grant Access") {
                         Log.d(TAG, "Snackbar onClick: Starts")
-                        if(ActivityCompat.shouldShowRequestPermissionRationale(this, READ_CONTACTS)){
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                                this,
+                                READ_CONTACTS
+                            )
+                        ) {
                             Log.d(TAG, "Snackbar onClick:  calllin requestPermissions")
                             ActivityCompat.requestPermissions(
                                 this,
@@ -109,17 +117,16 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onRequestPermissionsResult: starts")
         when (requestCode) {
             REQUEST_CODE_READ_CONTACTS -> {
-                readGranted =
-                    if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "onRequestPermissionsResult: permission granted")
-                        true
-                    } else {
-                        Log.d(TAG, "onRequestPermissionsResult: permission refused")
-                        fab.setOnClickListener {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "onRequestPermissionsResult: permission granted")
+//                        true
+                } else {
+                    Log.d(TAG, "onRequestPermissionsResult: permission refused")
+                    fab.setOnClickListener {
 
-                        }
-                        false
                     }
+//                        false
+                }
 //                fab.isEnabled = readGranted
 
             }
