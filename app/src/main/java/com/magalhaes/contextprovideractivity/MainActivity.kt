@@ -1,9 +1,12 @@
 package com.magalhaes.contextprovideractivity
 
 import android.Manifest.permission.READ_CONTACTS
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -67,8 +70,28 @@ class MainActivity : AppCompatActivity() {
                     ArrayAdapter<String>(this, R.layout.contact_detail, R.id.name, contacts)
                 contact_names.adapter = adapter
             } else {
-                Snackbar.make(view, "Please grant access to your Contacts", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+                Snackbar.make(view, "Please grant access to your Contacts", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Grant Access") {
+                        Log.d(TAG, "Snackbar onClick: Starts")
+                        if(ActivityCompat.shouldShowRequestPermissionRationale(this, READ_CONTACTS)){
+                            Log.d(TAG, "Snackbar onClick:  calllin requestPermissions")
+                            ActivityCompat.requestPermissions(
+                                this,
+                                arrayOf(READ_CONTACTS),
+                                REQUEST_CODE_READ_CONTACTS
+                            )
+                        } else {
+                            Log.d(TAG, "Snackbar onClick: launching settings")
+                            val intent = Intent()
+                            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                            val uri = Uri.fromParts("package", this.packageName, null)
+                            Log.d(TAG, "Snackbar onClick: Uri is $uri")
+                            intent.data = uri
+                            this.startActivity(intent)
+                        }
+                        Log.d(TAG, "Snackbar onClick: ends")
+
+                    }.show()
             }
 
 
